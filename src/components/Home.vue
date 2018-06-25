@@ -53,7 +53,7 @@ export default {
       let dayNotFinished = false
       if (this.matches.today) {
         this.matches.today.map((m) => {
-          if (m.status !== 'future') {
+          if (m.status === 'future' || m.status === 'in progress') {
             dayNotFinished = true
           }
         })
