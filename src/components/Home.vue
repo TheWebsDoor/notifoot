@@ -1,53 +1,22 @@
 <template>
   <div class="feed">
+    <div class="alert alert-danger" v-if="networkError">{{ $t('errorNetwork') }}</div>
     <div v-if="!loadingDatas">
-      <h2>{{ $t('titles.inProgressMatches') }}</h2>
-      <ul class="list-matches in-progress-list" v-if="inProgressMatches && inProgressMatches.length > 0">
-        <li class="match" v-for="match in inProgressMatches" :key="match.fifa_id">
-          <div class="home-team in-progress">
-            <div class="flag"><img :src="countryFlagURL(match.home_team.country)" alt=""></div>
-            <div class="team-name">{{ match.home_team.country }}</div>
-            <div class="score">{{ match.home_team.goals }}</div>
-          </div>
-          <div class="away-team in-progress">
-            <div class="flag"><img :src="countryFlagURL(match.away_team.country)" alt=""></div>
-            <div class="team-name">{{ match.away_team.country }}</div>
-            <div class="score">{{ match.away_team.goals }}</div>
-          </div>
-        </li>
-      </ul>
-      <div v-else>{{ $t('noMatches.inProgress') }}</div>
+      <div v-if="(!matches.inProgress || matches.inProgress.length === 0) && (matches.future && matches.future.length > 0) && dayStarted">
+        <h2>{{ $t('titles.nextMatches') }}</h2>
+        <ListMatches :matchesList="matches.future" v-if="matches.future && matches.future.length > 0"/>
+        <div v-else>{{ $t('noMatches.future') }}</div>
+      </div>
+      <div v-else>
+        <h2>{{ $t('titles.inProgressMatches') }}</h2>
+        <ListMatches :matchesList="matches.inProgress" v-if="matches.inProgress && matches.inProgress.length > 0"/>
+        <div v-else>{{ $t('noMatches.inProgress') }}</div>
+      </div>
       <h2>{{ $t('titles.todaysMatches') }}</h2>
-      <ul class="list-matches todays-list" v-if="todayMatches && todayMatches.length > 0">
-        <li class="match" v-for="match in todayMatches" :key="match.fifa_id">
-          <div class="home-team" :class="[getWinnerClass(match, match.home_team.country)]">
-            <div class="flag"><img :src="countryFlagURL(match.home_team.country)" alt=""></div>
-            <div class="team-name">{{ match.home_team.country }}</div>
-            <div class="score">{{ match.home_team.goals }}</div>
-          </div>
-          <div class="away-team" :class="[getWinnerClass(match, match.away_team.country)]">
-            <div class="flag"><img :src="countryFlagURL(match.away_team.country)" alt=""></div>
-            <div class="team-name">{{ match.away_team.country }}</div>
-            <div class="score">{{ match.away_team.goals }}</div>
-          </div>
-        </li>
-      </ul>
+      <ListMatches :matchesList="matches.today" v-if="matches.today && matches.today.length > 0"/>
       <div v-else>{{ $t('noMatches.today') }}</div>
       <h2>{{ $t('titles.passedMatches') }}</h2>
-      <ul class="list-matches todays-list" v-if="allMatches && allMatches.length > 0">
-        <li class="match" v-for="match in allMatches" :key="match.fifa_id">
-          <div class="home-team" :class="[getWinnerClass(match, match.home_team.country)]">
-            <div class="flag"><img :src="countryFlagURL(match.home_team.country)" alt=""></div>
-            <div class="team-name">{{ match.home_team.country }}</div>
-            <div class="score">{{ match.home_team.goals }}</div>
-          </div>
-          <div class="away-team" :class="[getWinnerClass(match, match.away_team.country)]">
-            <div class="flag"><img :src="countryFlagURL(match.away_team.country)" alt=""></div>
-            <div class="team-name">{{ match.away_team.country }}</div>
-            <div class="score">{{ match.away_team.goals }}</div>
-          </div>
-        </li>
-      </ul>
+      <ListMatches :matchesList="matches.all" v-if="matches.all && matches.all.length > 0"/>
       <div v-else>{{ $t('noMatches.finished') }}</div>
     </div>
     <div class="loading" v-else>
@@ -60,15 +29,36 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
+import ListMatches from './ListMatches'
 
 export default {
   name: 'Home',
+  components: {
+    ListMatches
+  },
   data () {
     return {
-      allMatches: null,
-      todayMatches: null,
-      inProgressMatches: null,
+      matches: {
+        all: null,
+        today: null,
+        inProgress: null,
+        future: null
+      },
+      networkError: null,
       loadingDatas: true
+    }
+  },
+  computed: {
+    dayStarted () {
+      let dayStarted = false
+      if (this.matches.today) {
+        this.matches.today.map((m) => {
+          if (m.status !== 'future') {
+            dayStarted = true
+          }
+        })
+      }
+      return dayStarted
     }
   },
   methods: {
@@ -90,28 +80,39 @@ export default {
     },
     goalNotification (teamWhoScored, match) {
       var options = {
-        body: 'Goal for ' + teamWhoScored + '! (' + match.home_team.country + ' (' + match.home_team.goals + ') - ' + match.away_team.country + ' (' + match.away_team.goals + '))'
+        body: this.$t('notification.goalFor', { team: teamWhoScored }) + '(' + match.home_team.country + ' (' + match.home_team.goals + ') - ' + match.away_team.country + ' (' + match.away_team.goals + '))'
       }
-      new Notification('Goal!', options)
+      new Notification(this.$t('notification.goal'), options)
     },
     async fetchDatas () {
       await axios.get('https://worldcup.sfg.io/matches/')
         .then((response) => {
-          this.todayMatches = response.data.filter((m) => {
+          this.networkError = false
+          this.matches.today = response.data.filter((m) => {
             return moment(m.datetime).format('LL') === moment().format('LL')
           })
-          this.allMatches = response.data.filter((m) => {
-            return moment(m.future).format('LL') <= moment().format('LL') && m.status !== 'future'
+          this.matches.all = response.data.filter((m) => {
+            return moment(m.datetime).format('LL') <= moment().format('LL') && m.status !== 'future' && m.status !== 'in progress'
           })
-          this.allMatches.sort(function(a, b){
+          this.matches.future = response.data.filter((m) => {
+            return moment(m.datetime).format('LL') === moment().add('1', 'days').format('LL') && m.status === 'future'
+          })
+          let addDays = 2
+          while ((!this.matches.future || this.matches.future.length === 0) && addDays < 30) {
+            this.matches.future = response.data.filter((m) => {
+              return moment(m.future).format('LL') === moment().add(addDays, 'days').format('LL') && m.status === 'future'
+            })
+            addDays++
+          }
+          this.matches.all.sort(function(a, b){
             return moment(b.datetime) - moment(a.datetime)
           })
-          let oldStateInProgressMatches = (this.inProgressMatches) ? JSON.parse(JSON.stringify(this.inProgressMatches)) : null
-          this.inProgressMatches = response.data.filter((m) => {
+          let oldStateInProgressMatches = (this.matches.inProgress) ? JSON.parse(JSON.stringify(this.matches.inProgress)) : null
+          this.matches.inProgress = response.data.filter((m) => {
             return moment(m.future).format('LL') === moment().format('LL') && m.status === 'in progress'
           })
           if (oldStateInProgressMatches) {
-            this.inProgressMatches.map((m) => {
+            this.matches.inProgress.map((m) => {
               let oldMatchFound = oldStateInProgressMatches.find((m) => {
                 return m.fifa_id === m.fifa_id
               })
@@ -120,6 +121,11 @@ export default {
                 this.goalNotification(teamWhoScored, m)
               }
             })
+          }
+        })
+        .catch(error => {
+          if (error) {
+            this.networkError = true
           }
         })
     }
@@ -138,27 +144,23 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-h1 {
-  display: flex;
-  justify-content: center;
-  align-items: center;
 
-  i.icon {
-    transform: translateY(-200px);
-    animation-name: bounceInDown;
-    animation-duration: 0.4s;
-    animation-fill-mode: both;
-    margin-right: 10px;
-  }
-}
+@import '../assets/stylesheets/_variables.scss';
+@import '../assets/stylesheets/_functions.scss';
+
 h3 {
-  margin: 40px 0 0;
+  margin: rem(40px) 0 0;
 }
+
+.alert-danger {
+  margin-top: rem(20px);
+}
+
 .loading {
-  margin-top: 50px;
+  margin-top: rem(50px);
 
   i.icon {
-    font-size: 100px;
+    font-size: rem(100px);
     position: relative;
     display: inline-block;
     border-radius: 50%;
@@ -173,127 +175,9 @@ h3 {
     }
   }
   .label {
-    font-size: 18px;
-    margin-top: 20px;
-  }
-}
-.list-matches {
-  list-style-type: none;
-  padding: 0;
-  max-width: 500px;
-  margin: auto;
-
-  .match {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    &:not(:last-child) {
-      margin-bottom: 10px;
-    }
-    .home-team,
-    .away-team {
-      display: flex;
-      align-items: center;
-      flex: 1 0 50%;
-      margin: 5px;
-
-      &.winner {
-        color: #fff;
-        background-color: #27ae60;
-
-        .score {
-          background-color: #1b7943;
-        }
-      }
-      &.loser {
-        color: #fff;
-        background-color: #e74c3c;
-
-        .score {
-          background-color: #b52516;
-        }
-      }
-      &.in-progress {
-        color: #fff;
-        background-color: #3498db;
-
-        .score {
-          background-color: #2980b9;
-        }
-      }
-      &.draw,
-      &.waiting {
-        color: #fff;
-        background-color: #95a5a6;
-
-        .score {
-          background-color: #7f8c8d;
-        }
-      }
-      &.waiting {
-        opacity: 0.5;
-      }
-      .team-name,
-      .score {
-        padding: 5px 10px;
-      }
-      .flag {
-        img {
-          max-height: 27px;
-          margin: 0 5px;
-          display: block;
-        }
-      }
-      .team-name {
-        flex: 1;
-      }
-      .score {
-        font-size: 20px;
-      }
-    }
+    font-size: rem(18px);
+    margin-top: rem(20px);
   }
 }
 
-@keyframes rotating {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0px 0px 0px 0 rgba(44, 62, 80, 0.4);
-  }
-  70% {
-    box-shadow: 0px 0px 0px 15px rgba(44, 62, 80, 0);
-  }
-  100% {
-    box-shadow: 0px 0px 0px 0 rgba(44, 62, 80, 0);
-  }
-}
-
-@keyframes bounceInDown {
-  0% {
-    transform: translateY(-200px);
-  }
-  50% {
-    transform: translateY(0);
-  }
-  60% {
-    transform: translateY(-20px);
-  }
-  90% {
-    transform: translateY(0);
-  }
-  95% {
-    transform: translateY(-5px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
 </style>

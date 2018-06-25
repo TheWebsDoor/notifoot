@@ -1,0 +1,8 @@
+// ==========================================
+// Functions
+// ==========================================
+
+// Create a px to em converting function, according to context declared in typo sass file
+@function rem($pixels, $context: $font-size-default) {
+  @return #{$pixels/$context}rem;
+}

@@ -1,10 +1,14 @@
+// ==========================================
+// Icons
+// ==========================================
+
 @font-face {
   font-family: 'icons';
-  src:  url('../fonts/icons/icons.eot?t4pymd');
-  src:  url('../fonts/icons/icons.eot?t4pymd#iefix') format('embedded-opentype'),
-    url('../fonts/icons/icons.ttf?t4pymd') format('truetype'),
-    url('../fonts/icons/icons.woff?t4pymd') format('woff'),
-    url('../fonts/icons/icons.svg?t4pymd#icons') format('svg');
+  src:  url('../fonts/icons/icons.eot?4bvobp');
+  src:  url('../fonts/icons/icons.eot?4bvobp#iefix') format('embedded-opentype'),
+    url('../fonts/icons/icons.ttf?4bvobp') format('truetype'),
+    url('../fonts/icons/icons.woff?4bvobp') format('woff'),
+    url('../fonts/icons/icons.svg?4bvobp#icons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -30,4 +34,8 @@
 
 .icon-night-mode:before {
   content: "\e901";
+}
+
+.icon-lang:before {
+  content: "\e902";
 }
