@@ -80,7 +80,7 @@ export default {
     },
     goalNotification (teamWhoScored, match) {
       var options = {
-        body: this.$t('notification.goalFor', { team: teamWhoScored }) + '(' + match.home_team.country + ' (' + match.home_team.goals + ') - ' + match.away_team.country + ' (' + match.away_team.goals + '))'
+        body: this.$t('notification.goalFor', { team: teamWhoScored }) + ' (' + match.home_team.country + ' (' + match.home_team.goals + ') - ' + match.away_team.country + ' (' + match.away_team.goals + '))'
       }
       new Notification(this.$t('notification.goal'), options)
     },
@@ -111,14 +111,17 @@ export default {
           this.matches.inProgress = response.data.filter((m) => {
             return moment(m.future).format('LL') === moment().format('LL') && m.status === 'in progress'
           })
-          if (oldStateInProgressMatches) {
+          // console.log(oldStateInProgressMatches, this.matches.inProgress)
+          if (oldStateInProgressMatches && 'Notification' in window) {
             this.matches.inProgress.map((m) => {
-              let oldMatchFound = oldStateInProgressMatches.find((m) => {
-                return m.fifa_id === m.fifa_id
+              let oldMatchFound = oldStateInProgressMatches.find((om) => {
+                return m.fifa_id === om.fifa_id
               })
-              let teamWhoScored = (m.home_team.goals > oldMatchFound.home_team.goals) ? m.home_team.country : (m.away_team.goals > oldMatchFound.away_team.goals) ? m.away_team.country : null
-              if (teamWhoScored) {
-                this.goalNotification(teamWhoScored, m)
+              if (oldMatchFound) {
+                let teamWhoScored = (m.home_team.goals > oldMatchFound.home_team.goals) ? m.home_team.country : (m.away_team.goals > oldMatchFound.away_team.goals) ? m.away_team.country : null
+                if (teamWhoScored) {
+                  this.goalNotification(teamWhoScored, m)
+                }
               }
             })
           }
@@ -131,8 +134,6 @@ export default {
     }
   },
   async created () {
-    Notification.requestPermission()
-
     await this.fetchDatas()
     this.loadingDatas = false
     setInterval(async () => {

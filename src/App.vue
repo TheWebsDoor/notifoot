@@ -4,7 +4,7 @@
       <span class="title"><i class="icon icon-logo"></i> Notifoot</span>
       <span class="baseline">Fifa World Cup 2018</span>
     </h1>
-    <div class="infos">{{ $t('infos.noRefreshNeeded') }}<br>{{ $t('infos.subscribeNotifications') }}</div>
+    <div class="infos">{{ $t('infos.noRefreshNeeded') }}<span v-if="notificationsNotSupported"><br>{{ $t('infos.subscribeNotifications') }}</span></div>
     <div class="actions">
       <button class="btn" @click="toggleNightMode"><i class="icon icon-night-mode"></i> {{ changeStateNightModeLabel }}</button>
       <div class="custom-select language-selector">
@@ -32,7 +32,8 @@ export default {
   data () {
     return {
       nightMode: false,
-      langSelectorListDisplayed: false
+      langSelectorListDisplayed: false,
+      notificationsNotSupported: false
     }
   },
   computed: {
@@ -70,6 +71,11 @@ export default {
     }
   },
   created () {
+    if ('Notification' in window) {
+      Notification.requestPermission()
+    } else {
+      this.notificationsNotSupported = true
+    }
     if (!this.$cookie.get('currentLanguage')) {
       this.$cookie.set('currentLanguage', this.$i18n.locale, { expires: '1Y' })
     } else {
