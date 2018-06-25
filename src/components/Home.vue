@@ -2,7 +2,7 @@
   <div class="feed">
     <div class="alert alert-danger" v-if="networkError">{{ $t('errorNetwork') }}</div>
     <div v-if="!loadingDatas">
-      <div v-if="(!matches.inProgress || matches.inProgress.length === 0) && (matches.future && matches.future.length > 0) && dayStarted">
+      <div v-if="(!matches.inProgress || matches.inProgress.length === 0) && (matches.future && matches.future.length > 0) && dayFinished">
         <h2>{{ $t('titles.nextMatches') }}</h2>
         <ListMatches :matchesList="matches.future" v-if="matches.future && matches.future.length > 0"/>
         <div v-else>{{ $t('noMatches.future') }}</div>
@@ -49,16 +49,16 @@ export default {
     }
   },
   computed: {
-    dayStarted () {
-      let dayStarted = false
+    dayFinished () {
+      let dayNotFinished = false
       if (this.matches.today) {
         this.matches.today.map((m) => {
           if (m.status !== 'future') {
-            dayStarted = true
+            dayNotFinished = true
           }
         })
       }
-      return dayStarted
+      return !dayNotFinished
     }
   },
   methods: {

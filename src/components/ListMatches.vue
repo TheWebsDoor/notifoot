@@ -118,9 +118,11 @@ export default {
       }
       .team-name {
         flex: 1;
+        line-height: rem(23px);
       }
       .score {
         font-size: rem(20px);
+        line-height: rem(23px);
       }
     }
   }
