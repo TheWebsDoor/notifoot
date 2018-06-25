@@ -1,6 +1,7 @@
 export default {
   en: {
     loading: 'Loading...',
+    halfTime: 'Half time',
     titles: {
       nextMatches: 'Next matches',
       inProgressMatches: 'Matches in progress',
@@ -28,6 +29,7 @@ export default {
   },
   fr: {
     loading: 'Chargement...',
+    halfTime: 'Mi-temps',
     titles: {
       nextMatches: 'Prochains matchs',
       inProgressMatches: 'Matchs en cours',
@@ -55,6 +57,7 @@ export default {
   },
   es: {
     loading: 'Carga...',
+    halfTime: 'Medio tiempo',
     titles: {
       nextMatches: 'Próximos partidos',
       inProgressMatches: 'Partidos en progreso',
@@ -82,6 +85,7 @@ export default {
   },
   de: {
     loading: 'Laden...',
+    halfTime: 'Halbzeit',
     titles: {
       nextMatches: 'Nächste Spiele',
       inProgressMatches: 'Spiele in Arbeit',
@@ -109,6 +113,7 @@ export default {
   },
   it: {
     loading: 'Caricamento...',
+    halfTime: 'Intervallo',
     titles: {
       nextMatches: 'Prossime partite',
       inProgressMatches: 'Partite in corso',
@@ -136,6 +141,7 @@ export default {
   },
   pt: {
     loading: 'Carregamento...',
+    halfTime: 'Meio-tempo',
     titles: {
       nextMatches: 'Próximos jogos',
       inProgressMatches: 'Jogos em andamento',
@@ -163,6 +169,7 @@ export default {
   },
   nl: {
     loading: 'Het laden...',
+    halfTime: 'Rust',
     titles: {
       nextMatches: 'Volgende wedstrijden',
       inProgressMatches: 'Huidige spellen',

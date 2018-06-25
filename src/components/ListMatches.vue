@@ -1,15 +1,19 @@
 <template>
   <ul class="list-matches in-progress-list">
     <li class="match" v-for="match in matchesList" :key="match.fifa_id">
-      <div class="home-team" :class="[getTeamMatchClass(match, match.home_team.country)]">
-        <div class="flag"><img :src="countryFlagURL(match.home_team.country)" alt=""></div>
-        <div class="team-name">{{ match.home_team.country }}</div>
-        <div class="score" v-if="match.status !== 'future'">{{ match.home_team.goals }}</div>
-      </div>
-      <div class="away-team" :class="[getTeamMatchClass(match, match.away_team.country)]">
-        <div class="flag"><img :src="countryFlagURL(match.away_team.country)" alt=""></div>
-        <div class="team-name">{{ match.away_team.country }}</div>
-        <div class="score" v-if="match.status !== 'future'">{{ match.away_team.goals }}</div>
+      <div class="time" v-if="match.time === 'half-time'">{{ $t('halfTime') }}</div>
+      <div class="time" v-else-if="match.time !== 'full-time'">{{ match.time }}</div>
+      <div class="teams">
+        <div class="home-team" :class="[getTeamMatchClass(match, match.home_team.country)]">
+          <div class="flag"><img :src="countryFlagURL(match.home_team.country)" alt=""></div>
+          <div class="team-name">{{ match.home_team.country }}</div>
+          <div class="score" v-if="match.status !== 'future'">{{ match.home_team.goals }}</div>
+        </div>
+        <div class="away-team" :class="[getTeamMatchClass(match, match.away_team.country)]">
+          <div class="flag"><img :src="countryFlagURL(match.away_team.country)" alt=""></div>
+          <div class="team-name">{{ match.away_team.country }}</div>
+          <div class="score" v-if="match.status !== 'future'">{{ match.away_team.goals }}</div>
+        </div>
       </div>
     </li>
   </ul>
@@ -55,74 +59,99 @@ export default {
   margin: auto;
 
   .match {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: relative;
 
     &:not(:last-child) {
       margin-bottom: rem(10px);
     }
-    .home-team,
-    .away-team {
+    .time {
+      text-transform: uppercase;
+      font-size: rem(12px);
+      font-weight: bold;
+      color: $jewel;
+
+      @media screen and (min-width: 769px) {
+        position: absolute;
+        left: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        padding-left: rem(10px);
+      }
+    }
+    .teams {
       display: flex;
+      justify-content: center;
       align-items: center;
-      flex: 1 0 50%;
-      margin: rem(5px);
 
-      &.winner {
-        color: $porcelain;
-        background-color: $jungleGreen;
+      .home-team,
+      .away-team {
+        display: flex;
+        align-items: center;
+        margin: rem(5px);
 
+        @media screen and (min-width: 500px) {
+          flex: 0 0 50%;
+        }
+        &.winner {
+          color: $porcelain;
+          background-color: $jungleGreen;
+
+          .score {
+            background-color: $jewel;
+          }
+        }
+        &.loser {
+          color: $porcelain;
+          background-color: $cinnabar;
+
+          .score {
+            background-color: $thunderbird;
+          }
+        }
+        &.in-progress {
+          color: $porcelain;
+          background-color: $curiousBlue;
+
+          .score {
+            background-color: $mariner;
+          }
+        }
+        &.draw,
+        &.waiting {
+          color: $porcelain;
+          background-color: $cascade;
+
+          .score {
+            background-color: $osloGray;
+          }
+        }
+        &.waiting {
+          opacity: 0.5;
+        }
+        .team-name,
         .score {
-          background-color: $jewel;
+          padding: rem(5px) rem(10px);
         }
-      }
-      &.loser {
-        color: $porcelain;
-        background-color: $cinnabar;
+        .flag {
+          img {
+            max-height: rem(27px);
+            margin: 0 rem(5px);
+            display: block;
+          }
+        }
+        .team-name {
+          display: none;
+          flex: 1;
+          line-height: rem(23px);
 
+          @media screen and (min-width: 500px) {
+            display: block;
+          }
+        }
         .score {
-          background-color: $thunderbird;
+          font-size: rem(20px);
+          line-height: rem(23px);
         }
-      }
-      &.in-progress {
-        color: $porcelain;
-        background-color: $curiousBlue;
-
-        .score {
-          background-color: $mariner;
-        }
-      }
-      &.draw,
-      &.waiting {
-        color: $porcelain;
-        background-color: $cascade;
-
-        .score {
-          background-color: $osloGray;
-        }
-      }
-      &.waiting {
-        opacity: 0.5;
-      }
-      .team-name,
-      .score {
-        padding: rem(5px) rem(10px);
-      }
-      .flag {
-        img {
-          max-height: rem(27px);
-          margin: 0 rem(5px);
-          display: block;
-        }
-      }
-      .team-name {
-        flex: 1;
-        line-height: rem(23px);
-      }
-      .score {
-        font-size: rem(20px);
-        line-height: rem(23px);
       }
     }
   }
