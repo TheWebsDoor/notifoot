@@ -4,7 +4,7 @@
       <span class="title"><i class="icon icon-logo"></i> Notifoot</span>
       <span class="baseline">Fifa World Cup 2018</span>
     </h1>
-    <div class="infos">{{ $t('infos.noRefreshNeeded') }}<span v-if="notificationsNotSupported"><br>{{ $t('infos.subscribeNotifications') }}</span></div>
+    <div class="infos">{{ $t('infos.noRefreshNeeded') }}<span v-if="!notificationsNotSupported"><br>{{ $t('infos.subscribeNotifications') }}</span></div>
     <div class="actions">
       <button class="btn" @click="toggleNightMode"><i class="icon icon-night-mode"></i> {{ changeStateNightModeLabel }}</button>
       <div class="custom-select language-selector">
