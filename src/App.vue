@@ -211,6 +211,7 @@ h1 {
       left: 0;
       top: 0;
       min-width: 100%;
+      z-index: 2;
     }
   }
 }
