@@ -85,7 +85,7 @@ export default {
       new Notification(this.$t('notification.goal'), options)
     },
     async fetchDatas () {
-      await axios.get('https://worldcup.sfg.io/matches/')
+      await axios.get('https://notifoot-api.alaqasar.com/')
         .then((response) => {
           this.networkError = false
           this.matches.today = response.data.filter((m) => {
