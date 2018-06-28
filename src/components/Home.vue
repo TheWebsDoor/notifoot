@@ -138,7 +138,7 @@ export default {
     this.loadingDatas = false
     setInterval(async () => {
       await this.fetchDatas()
-    }, 20000)
+    }, 10000)
   }
 }
 </script>
