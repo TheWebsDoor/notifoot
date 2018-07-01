@@ -88,7 +88,9 @@ export default {
         left: 100%;
         top: 50%;
         transform: translateY(-50%);
-        padding-left: rem(10px);
+        padding-left: rem(10px, $font-size-default);
+        width: rem(120px, $font-size-default);
+        text-align: left;
       }
     }
     .teams {
