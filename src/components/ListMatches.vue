@@ -37,10 +37,10 @@ export default {
       return '/img/flags/flag-of-' + countryName.split(' ').join('-') + '.png'
     },
     getTeamMatchClass (match, team) {
-      if ((match.status === 'future' && moment(match.datetime).format('LL') > moment().format('LL')) || match.status === 'in progress') {
+      if ((match.status === 'future' && moment(match.datetime).format('YYYY-MM-DD') > moment().format('YYYY-MM-DD')) || match.status === 'in progress') {
         return 'in-progress'
       }
-      if (match.status === 'future' && moment(match.datetime).format('LL') === moment().format('LL')) {
+      if (match.status === 'future' && moment(match.datetime).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')) {
         return 'waiting'
       }
       if (match.winner) {

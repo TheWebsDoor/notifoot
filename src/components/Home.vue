@@ -85,22 +85,22 @@ export default {
       new Notification(this.$t('notification.goal'), options)
     },
     async fetchDatas () {
-      await axios.get('https://notifoot-api.alaqasar.com/')
+      await axios.get('https://worldcup.sfg.io/matches')
         .then((response) => {
           this.networkError = false
           this.matches.today = response.data.filter((m) => {
-            return moment(m.datetime).format('LL') === moment().format('LL')
+            return moment(m.datetime).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')
           })
           this.matches.all = response.data.filter((m) => {
-            return moment(m.datetime).format('LL') <= moment().format('LL') && m.status !== 'future' && m.status !== 'in progress'
+            return moment(m.datetime).format('YYYY-MM-DD') <= moment().format('YYYY-MM-DD') && m.status !== 'future' && m.status !== 'in progress'
           })
           this.matches.future = response.data.filter((m) => {
-            return moment(m.datetime).format('LL') === moment().add('1', 'days').format('LL') && m.status === 'future'
+            return moment(m.datetime).format('YYYY-MM-DD') === moment().add('1', 'days').format('YYYY-MM-DD') && m.status === 'future'
           })
           let addDays = 2
           while ((!this.matches.future || this.matches.future.length === 0) && addDays < 30) {
             this.matches.future = response.data.filter((m) => {
-              return moment(m.future).format('LL') === moment().add(addDays, 'days').format('LL') && m.status === 'future'
+              return moment(m.future).format('YYYY-MM-DD') === moment().add(addDays, 'days').format('YYYY-MM-DD') && m.status === 'future'
             })
             addDays++
           }
@@ -109,7 +109,7 @@ export default {
           })
           let oldStateInProgressMatches = (this.matches.inProgress) ? JSON.parse(JSON.stringify(this.matches.inProgress)) : null
           this.matches.inProgress = response.data.filter((m) => {
-            return moment(m.future).format('LL') === moment().format('LL') && m.status === 'in progress'
+            return moment(m.future).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') && m.status === 'in progress'
           })
           // console.log(oldStateInProgressMatches, this.matches.inProgress)
           if (oldStateInProgressMatches && 'Notification' in window) {
@@ -136,9 +136,9 @@ export default {
   async created () {
     await this.fetchDatas()
     this.loadingDatas = false
-    setInterval(async () => {
-      await this.fetchDatas()
-    }, 10000)
+    // setInterval(async () => {
+    //   await this.fetchDatas()
+    // }, 10000)
   }
 }
 </script>
