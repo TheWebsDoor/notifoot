@@ -3,7 +3,7 @@
     <li class="match" v-for="match in matchesList" :key="match.fifa_id">
       <div class="time" v-if="match.time === 'half-time'">{{ $t('halfTime') }}</div>
       <div class="time" v-else-if="match.time !== 'full-time'">{{ match.time }}</div>
-      <div class="starting-time" v-if="!match.time && formatDate(match.datetime, 'LL') === formatDate(new Date(), 'LL')">{{ formatDate(match.datetime, 'HH:mm') }}</div>
+      <div class="starting-time" v-if="!match.time"><span v-if="isInFuture(match.datetime)">{{ formatDate(match.datetime, 'LL') }} - </span>{{ formatDate(match.datetime, 'HH:mm') }}</div>
       <div class="teams">
         <div class="home-team" :class="[getTeamMatchClass(match, match.home_team.country)]">
           <div class="flag"><img :src="countryFlagURL(match.home_team.country)" alt=""></div>
@@ -27,8 +27,11 @@ export default {
   name: 'ListMatches',
   props: ['matchesList'],
   methods: {
+    isInFuture (datetime) {
+      return moment(datetime).format('YYYY-MM-DD') > moment().format('YYYY-MM-DD')
+    },
     formatDate (date, format) {
-      return moment(date).format(format)
+      return (date) ? moment(date).format(format) : moment().format(format)
     },
     countryFlagURL (countryName) {
       return '/img/flags/flag-of-' + countryName.split(' ').join('-') + '.png'
