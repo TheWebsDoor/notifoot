@@ -85,7 +85,7 @@ export default {
       new Notification(this.$t('notification.goal'), options)
     },
     async fetchDatas () {
-      await axios.get('https://worldcup.sfg.io/matches')
+      await axios.get(process.env.VUE_APP_API_URL)
         .then((response) => {
           this.networkError = false
           this.matches.today = response.data.filter((m) => {
@@ -136,9 +136,9 @@ export default {
   async created () {
     await this.fetchDatas()
     this.loadingDatas = false
-    // setInterval(async () => {
-    //   await this.fetchDatas()
-    // }, 10000)
+    setInterval(async () => {
+      await this.fetchDatas()
+    }, 10000)
   }
 }
 </script>
