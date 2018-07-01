@@ -31,7 +31,7 @@ export default {
       return moment(datetime).format('YYYY-MM-DD') > moment().format('YYYY-MM-DD')
     },
     formatDate (date, format) {
-      return (date) ? moment(date).format(format) : moment().format(format)
+      return (date) ? moment(date).locale(this.$i18n.locale).format(format) : moment().locale(this.$i18n.locale).format(format)
     },
     countryFlagURL (countryName) {
       return '/img/flags/flag-of-' + countryName.split(' ').join('-') + '.png'
