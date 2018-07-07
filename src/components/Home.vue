@@ -125,10 +125,15 @@ export default {
               }
             })
           }
+
+          localStorage.setItem('matches', JSON.stringify(this.matches))
         })
         .catch(error => {
           if (error) {
             this.networkError = true
+            if (localStorage.getItem('matches')) {
+              this.matches = JSON.parse(localStorage.getItem('matches'))
+            }
           }
         })
     }

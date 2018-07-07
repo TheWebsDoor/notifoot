@@ -55,6 +55,7 @@ export default {
     toggleNightMode () {
       this.nightMode = !this.nightMode
       this.$cookie.set('nightMode', JSON.stringify(this.nightMode), { expires: '1Y' })
+      localStorage.setItem('nightMode', JSON.stringify(this.nightMode))
       this.manageNightModeClass()
     },
     manageNightModeClass () {
@@ -67,6 +68,7 @@ export default {
     selectLang (lang) {
       this.$i18n.locale = lang
       this.$cookie.set('currentLanguage', lang, { expires: '1Y' })
+      localStorage.setItem('currentLanguage', lang)
       this.langSelectorListDisplayed = false
     }
   },
@@ -76,15 +78,17 @@ export default {
     } else {
       this.notificationsNotSupported = true
     }
-    if (!this.$cookie.get('currentLanguage')) {
+    if (!this.$cookie.get('currentLanguage') && !localStorage.getItem('currentLanguage')) {
       this.$cookie.set('currentLanguage', this.$i18n.locale, { expires: '1Y' })
+      localStorage.setItem('currentLanguage', this.$i18n.locale)
     } else {
-      this.$i18n.locale = this.$cookie.get('currentLanguage')
+      this.$i18n.locale = this.$cookie.get('currentLanguage') ? this.$cookie.get('currentLanguage') : localStorage.getItem('currentLanguage')
     }
-    if (!this.$cookie.get('nightMode')) {
+    if (!this.$cookie.get('nightMode') && !localStorage.getItem('nightMode')) {
       this.$cookie.set('nightMode', 'false', { expires: '1Y' })
+      localStorage.setItem('nightMode', 'false')
     } else {
-      this.nightMode = JSON.parse(this.$cookie.get('nightMode'))
+      this.nightMode = this.$cookie.get('nightMode') ? JSON.parse(this.$cookie.get('nightMode')) : JSON.parse(localStorage.getItem('nightMode'))
       this.manageNightModeClass()
     }
   }
