@@ -100,7 +100,7 @@ export default {
           let addDays = 2
           while ((!this.matches.future || this.matches.future.length === 0) && addDays < 30) {
             this.matches.future = response.data.filter((m) => {
-              return moment(m.future).format('YYYY-MM-DD') === moment().add(addDays, 'days').format('YYYY-MM-DD') && m.status === 'future'
+              return moment(m.datetime).format('YYYY-MM-DD') === moment().add(addDays, 'days').format('YYYY-MM-DD') && m.status === 'future'
             })
             addDays++
           }
@@ -111,7 +111,6 @@ export default {
           this.matches.inProgress = response.data.filter((m) => {
             return moment(m.future).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') && m.status === 'in progress'
           })
-          // console.log(oldStateInProgressMatches, this.matches.inProgress)
           if (oldStateInProgressMatches && 'Notification' in window) {
             this.matches.inProgress.map((m) => {
               let oldMatchFound = oldStateInProgressMatches.find((om) => {
